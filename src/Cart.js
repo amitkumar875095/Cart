@@ -1,5 +1,5 @@
 import React from 'react';
- import CartItem from "./CartItem";
+import CartItem from "./CartItem";
  import "./index"
 class Cart extends  React.Component{
     constructor(){

@@ -3,7 +3,7 @@ import React from 'react'
 import Cart from "./cart"
 import Navbar  from "./Navbar";
 import app from './index'
-import {getFirestore,collection, getDocs, onSnapshot, Firestore,addDoc,updateDoc,doc} from 'firebase/firestore';
+import {getFirestore,collection, getDocs, onSnapshot, Firestore,addDoc,updateDoc,doc,deleteDoc} from 'firebase/firestore';
 
 class App extends React.Component
  {
@@ -58,6 +58,9 @@ class App extends React.Component
   }
    decrease = (product) =>{
     console.log("decrease the qty",product);
+    if(product.qty==0){
+      return ;
+    }
      const {products} = this.state;
      const index = products.indexOf(product);
      const productRef = doc(this.collectionRef,products[index].id);
@@ -69,11 +72,15 @@ class App extends React.Component
 delete = (id)=>{
     console.log("delete" , id)
     const {products} = this.state;
+     const docRef = doc(this.collectionRef,id);
+     deleteDoc(docRef);
+    // const items = products.filter((item)=>item.id != id);
+    // this.setState({
+    //     products : items,
+    // })
+
    
-    const items = products.filter((item)=>item.id != id);
-    this.setState({
-        products : items,
-    })
+
 }
  getCartCount =()=>{
     const {products} = this.state;

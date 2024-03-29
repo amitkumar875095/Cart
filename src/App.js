@@ -3,7 +3,7 @@ import React from 'react'
 import Cart from "./cart"
 import Navbar  from "./Navbar";
 import app from './index'
-import {getFirestore,collection, getDocs, onSnapshot, Firestore,addDoc,updateDoc,doc,deleteDoc} from 'firebase/firestore';
+import {getFirestore,collection,query,where, getDocs, onSnapshot, Firestore,addDoc,updateDoc,doc,deleteDoc} from 'firebase/firestore';
 
 class App extends React.Component
  {
@@ -23,7 +23,9 @@ class App extends React.Component
   componentDidMount(){
     const db = getFirestore(app);
      this.collectionRef =   collection(db,'Products');
-  
+     console.log(this.collectionRef);
+    const q = query(this.collectionRef,where('price','>',0));
+     
   onSnapshot(this.collectionRef,(snapshot)=>{
     console.log(snapshot);
     const products = snapshot.docs.map((doc)=>{

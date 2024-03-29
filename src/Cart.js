@@ -7,7 +7,7 @@ const Cart = (props)=>{
         const {products} = props;
         return (
             <div className='cart'>
-         
+             
        {     products.map((items) => {
               return    <CartItem 
             

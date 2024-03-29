@@ -3,7 +3,7 @@ import React from 'react'
 import Cart from "./cart"
 import Navbar  from "./Navbar";
 import app from './index'
-import {getFirestore,collection, getDocs} from 'firebase/firestore';
+import {getFirestore,collection, getDocs, onSnapshot} from 'firebase/firestore';
 
 class App extends React.Component
  {
@@ -20,7 +20,10 @@ class App extends React.Component
   componentDidMount(){
     const db = getFirestore(app);
     const collectionRef =   collection(db,'Products');
-    getDocs(collectionRef).then((snapshot)=>{
+
+
+    
+    onSnapshot(collectionRef,(snapshot)=>{
        console.log(snapshot);
 
        const products = snapshot.docs.map((doc)=>{
@@ -32,14 +35,10 @@ class App extends React.Component
      this.setState({
       products : products,
       loading  : false,
-     })
+     })})
 
 
-    }).catch((error)=>{
-     console.log("error",error)
-    });
-    
-  }
+    }
 
 
 

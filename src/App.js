@@ -21,21 +21,30 @@ class App extends React.Component
     const db = getFirestore(app);
     const collectionRef =   collection(db,'Products');
 
+var promise = new Promise((resolve,reject)=>{
+  onSnapshot(collectionRef,(snapshot)=>{
+    console.log(snapshot);
 
-    
-    onSnapshot(collectionRef,(snapshot)=>{
-       console.log(snapshot);
+    const products = snapshot.docs.map((doc)=>{
+     const data  = doc.data();
+     data['id'] = doc.id;
+     
+     return doc.data();
+   })
+   resolve(products);
+   console.log(products);
+},reject);
+});
 
-       const products = snapshot.docs.map((doc)=>{
-        const data  = doc.data();
-        data['id'] = doc.id;
-        return doc.data();
-      })
-      console.log(products);
-     this.setState({
-      products : products,
-      loading  : false,
-     })})
+   promise.then((result)=>{
+       this.setState({
+         products: result,
+         loading : false,
+       })
+   }).catch((error)=>{
+    console.log(error);
+   })
+  
 
 
     }

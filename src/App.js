@@ -3,7 +3,7 @@ import React from 'react'
 import Cart from "./cart"
 import Navbar  from "./Navbar";
 import app from './index'
-import {getFirestore,collection, getDocs, onSnapshot} from 'firebase/firestore';
+import {getFirestore,collection, getDocs, onSnapshot, Firestore,addDoc,updateDoc,doc} from 'firebase/firestore';
 
 class App extends React.Component
  {
@@ -12,42 +12,31 @@ class App extends React.Component
     this.state = {
         products : [],
         loading : true,
-  }}
+  };
+  this.collectionRef = null;
+
+}
 
 
 
 
   componentDidMount(){
     const db = getFirestore(app);
-    const collectionRef =   collection(db,'Products');
-
-var promise = new Promise((resolve,reject)=>{
-  onSnapshot(collectionRef,(snapshot)=>{
-    console.log(snapshot);
-
-    const products = snapshot.docs.map((doc)=>{
-     const data  = doc.data();
-     data['id'] = doc.id;
-     
-     return doc.data();
-   })
-   resolve(products);
-   console.log(products);
-},reject);
-});
-
-   promise.then((result)=>{
-       this.setState({
-         products: result,
-         loading : false,
-       })
-   }).catch((error)=>{
-    console.log(error);
-   })
+     this.collectionRef =   collection(db,'Products');
   
-
-
-    }
+  onSnapshot(this.collectionRef,(snapshot)=>{
+    console.log(snapshot);
+    const products = snapshot.docs.map((doc)=>{
+     const dataRef  = doc.data();
+     dataRef['id'] = doc.id;
+     return dataRef;
+   })
+   console.log(products,"products");
+   this.setState({
+    products: products,
+    loading : false,
+  })
+})}
 
 
 
@@ -58,24 +47,25 @@ var promise = new Promise((resolve,reject)=>{
       console.log("increse the qty",product)
       const {products} = this.state;
       const index = products.indexOf(product);
-
-      products[index].qty += 1;
-      this.setState ({
-        products : products,
-      })
+      console.log(products);
+      const productRef = doc(this.collectionRef,products[index].id);
+    
+    updateDoc(productRef,{
+        qty : product.qty+1,
+    })
+    
+        
   }
    decrease = (product) =>{
     console.log("decrease the qty",product);
      const {products} = this.state;
      const index = products.indexOf(product);
-     {if(products[index].qty==0){
-          return 
-     }}
-     products[index].qty -=1;
-     this.setState({
-        products
+     const productRef = doc(this.collectionRef,products[index].id);
+     console.log(productRef,"docReff")
+     updateDoc(productRef,{
+      qty : product.qty-1,
      })
-}
+   }
 delete = (id)=>{
     console.log("delete" , id)
     const {products} = this.state;
@@ -103,6 +93,21 @@ getCartTotal = ()=>{
    return count;
 }
 
+
+
+addProduct = ()=>{
+  const items =  addDoc(this.collectionRef,{
+    img : '',
+    price : 55,
+    qty : 2,
+    title : 'Washing machine',
+   })
+  
+}
+
+
+
+
 render(){
   const {products , loading} = this.state;
   return (
@@ -111,6 +116,17 @@ render(){
       <Navbar
          count = {this.getCartCount()}
       />
+
+      {/* // Add button */}
+     <button onClick={this.addProduct} style={{padding : 20 ,fontSize : "1.5rem"}}>Add a Product</button>
+
+
+
+
+
+
+
+
       {loading&& <h1>Loading The data ..</h1>}
      <Cart
      products = {products}
